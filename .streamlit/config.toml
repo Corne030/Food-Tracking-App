@@ -1,0 +1,10 @@
+[theme]
+
+[server]
+runOnSave = true
+
+[runner]
+magicEnables = true
+
+[layout]
+wideMode = true
