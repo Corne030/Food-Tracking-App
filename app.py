@@ -1,13 +1,13 @@
 import streamlit as st
 import pandas as pd
 import csv
-from datetime import datetime
+from datetime import datetime, date
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 st.set_page_config(layout="wide")
 
-# DARTEN
+# DATEN
 
 # DataFrames
 df = pd.read_csv("dataframe_bereinigt.csv")
@@ -227,6 +227,7 @@ with st.container():
         elif fett[0] >= (gesamtbedarf * gender_same[ziel]["Fett"])*0.8:
             st.info("Fast geschafft!")
 
+
 # HEUTIGE NAHRUNGSAUFNAHME
 with st.container():
 
@@ -247,19 +248,19 @@ with st.container():
         namen_produkte_sorted = sorted(namen_produkte)
 
         with col1:
-            name = st.selectbox("Name des Produktes", namen_produkte_sorted)
+            name = st.selectbox("Name des Produktes", namen_produkte_sorted, help = "Findest du dein Produkt nicht? Füge es unter dem Reiter 'Manuell hinzufügen' selber in die Datenbank ein.")
 
         with col2:
-            marke = st.selectbox("Von welcher Marke war das Produkt?", df.loc[df["Name"] == name, "Marke"])
+            marke = st.selectbox("Von welcher Marke war das Produkt?", df.loc[df["Name"] == name, "Marke"], help ="Wenn du dein Produkt findest aber nicht die passende Marke, wähle eine andere Marke mit dem selben Produktnamen aus. Vergleiche die Nährstofftablle im ***Gesamtverlauf*** mit der auf deinem Produkt. Sind es die selben Nährstoffe, ist das Produkt hier unter einer anderen Marke geführt. Alternativ kannst du dein Produkt unter der gwünschten Marke auch manuell hinzufügen.")
             
         index = df[(df['Name'] == name) & (df['Marke'] == marke)].index[0]
 
         with col3:
             if (df.loc[index, "Einheit (g / Stück)"]) == "100.0":
-                menge = st.number_input("Wie viel hast du gegessen (g/ml) " , min_value = 0)
+                menge = st.number_input("Wie viel hast du gegessen (g/ml) " , min_value = 0, help = "Dieses Produkt ist in der Datenbank mit der Einheit g/ml geführt. Schreibe in dieses Feld die Menge (in g oder ml), die du von diesem Produkt gegessen hast.")
 
             elif (df.loc[index, "Einheit (g / Stück)"]) != "100.0":
-                menge = st.number_input(f"Wie viel Stück hast du gegessen? (1 Stück = {df.loc[index, "Einheit (g / Stück)"]})" , min_value = 0)
+                menge = st.number_input(f"Wie viel Stück hast du gegessen? (1 Stück = {df.loc[index, "Einheit (g / Stück)"]})" , min_value = 0,help = "Dieses Produkt ist in der Datenbank mit der Einheit Stückzahl geführt. Über dem Eingabefeld steht in Klammern, was bei deinem Produkt einem Stück entspricht. Schreibe hier die Anzahl an Stück rein, die du gegessen hast.")
 
         with col1:
             button = st.button("Eingabe Bestätigen")
@@ -310,19 +311,19 @@ with st.container():
         col1, col2, col3 = st.columns(3)
 
         with col1:
-            marke_restaurants = st.selectbox("Name des Resturants", resturants_sort)
+            marke_restaurants = st.selectbox("Name der Gastronomie", resturants_sort, help = "Findest du deinen gwünschten Gastronomiebetrieb nicht? Unter dem Reiter ***Manuell hinzufügen*** kannst du die Lieblingsgerichte deines gewünschten Gastronomiebetriebes hinzufügen.")
 
         with col2:
-            name_restaurants = st.selectbox("Wie heißt dein Gericht?", df_restaurants.loc[df_restaurants["Marke"] == marke_restaurants, "Name"])
+            name_restaurants = st.selectbox("Wie heißt dein Gericht?", df_restaurants.loc[df_restaurants["Marke"] == marke_restaurants, "Name"], help = "Findest du deinen gwünschtes Gericht nicht? Unter dem Reiter ***Manuell hinzufügen*** kannst du es der Datenbank hinzufügen.")
         
         index_restaurants = df_restaurants[(df_restaurants['Name'] == name_restaurants) & (df_restaurants['Marke'] == marke_restaurants)].index[0]
 
         with col3:
             if (df_restaurants.loc[index_restaurants, "Einheit (g / Stück)"]) == "100.0" or (df_restaurants.loc[index_restaurants, "Einheit (g / Stück)"]) == "100":
-                menge_restaurants = st.number_input("Wie viel hast du gegessen (g/ml)" , min_value = 0)
+                menge_restaurants = st.number_input("Wie viel hast du gegessen (g/ml)" , min_value = 0, help = "Dieses Produkt ist in der Datenbank mit der Einheit g/ml geführt. Schreibe in dieses Feld die Menge (in g oder ml), die du von diesem Produkt gegessen hast.")
 
             elif (df_restaurants.loc[index_restaurants, "Einheit (g / Stück)"]) != "100.0":
-                menge_restaurants = st.number_input(f"Wie viel Stück hast du gegessen? (1 Stück = {df_restaurants.loc[index_restaurants, "Einheit (g / Stück)"]})" , min_value = 0)
+                menge_restaurants = st.number_input(f"Wie viel Stück hast du gegessen? (1 Stück = {df_restaurants.loc[index_restaurants, "Einheit (g / Stück)"]})" , min_value = 0, help = "Dieses Produkt ist in der Datenbank mit der Einheit Stückzahl geführt. Über dem Eingabefeld steht in Klammern, was bei deinem Produkt einem Stück entspricht. Schreibe hier die Anzahl an Stück rein, die du gegessen hast.")
         
         with col1:
             button_2 = st.button("Eingabe Bestätigen ")
@@ -363,7 +364,7 @@ with st.container():
                 st.experimental_rerun()
 
     with tab3:
-        st.subheader("Was hast du heute gegessen?")
+        st.subheader("Was hast du heute gegessen?", help = "Produkte die du einmal hinzugefügt hast, werden in der Datenbank gespeichert und du kannst in Zukunft auf sie zugreifen.")
         st.write("Dein Produkt befindet sich nicht in der Datenbank? Hier kannst du es manuell hinzufügen.")
 
         produkt = []
@@ -453,20 +454,36 @@ with st.container():
 
     with st.expander("Weitere Informationen"):     
         
-        # Liniendiagramm
-        plt.figure(figsize=(12, 6))
-        sns.lineplot(x='Datum', y='Kalorien', data=df_diagramm, label='Kalorien', linewidth=2.5)
-        sns.lineplot(x='Datum', y='Fett', data=df_diagramm, label='Fett', linewidth=2.5)
-        sns.lineplot(x='Datum', y='Kohlenhydrate', data=df_diagramm, label='Kohlenhydrate', linewidth=2.5)
-        sns.lineplot(x='Datum', y='Eiweiß', data=df_diagramm, label='Eiweiß', linewidth=2.5)
+        col1, col2 = st.columns(2)
 
-        plt.xlabel('Datum')
-        plt.ylabel('Nährstoffe')
-        plt.title('Verlauf')
-        plt.legend()
-  
-        st.pyplot(plt)
+        with col1:
+            feld = st.selectbox("Deinen Verlauf welches Nährstoffes möchtest du dir anzeigen lassen?", ("Kalorien", "Eiweiß", "Fett", "Kohlenhydrate"))
+            
+            # Liniendiagramm
+            plt.figure(figsize=(8, 6))
+            sns.lineplot(x='Datum', y=feld, data=df_diagramm, label=feld, linewidth=2.5)
+            
+            if feld == "Kalorien":
+                y = [gesamtbedarf, gesamtbedarf]
+            elif feld == "Eiweiß":
+                y = [gewicht* gender_same[ziel]["Eiweiß"], gewicht* gender_same[ziel]["Eiweiß"]]
+            elif feld == "Fett":
+                y = [gesamtbedarf * gender_same[ziel]["Kohlenhydrate"], gesamtbedarf * gender_same[ziel]["Kohlenhydrate"]]
+            elif feld == "Kohlenhydrate":
+                y = [gesamtbedarf * gender_same[ziel]["Fett"], gesamtbedarf * gender_same[ziel]["Fett"]]
 
+            plt.plot([df_diagramm["Datum"][0], df_diagramm["Datum"][len(df_diagramm)-1]], y, color='red', linestyle='--', label='Täglicher Bedarf')
+
+            plt.xlabel('Datum')
+            plt.ylabel("Menge in Gramm")
+            plt.title(f"Verlauf: {feld}")
+            plt.legend()
+    
+            st.pyplot(plt)
+
+        with col2:
+            
+            pass
 
 # TO DOS:
 # DATEN FÜR ABNEHMEN NOCHMAL ANSCHAUEN
@@ -474,5 +491,4 @@ with st.container():
 # sidebar in cache speichern
 # Diagramme hinzufügen
 # visuell überarbeiten
-# test
         
