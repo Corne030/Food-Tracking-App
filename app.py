@@ -4,6 +4,7 @@ import csv
 from datetime import datetime, date
 import matplotlib.pyplot as plt
 import seaborn as sns
+sns.set_theme(style="whitegrid", font_scale= 1.3)
 
 st.set_page_config(layout="wide")
 
@@ -33,11 +34,12 @@ gender_same = {"Muskelaufbau":{"Eiweiß": 1.6, "Kohlenhydrate": 0.55, "Fett": 0.
 
 aktivitätsfaktor = {"sehr gering": 1.2, "gering": 1.375, "moderat": 1.55, "hoch": 1.725, "sehr hoch": 1.9} # 'sehr hoch' hier vernachlässigt
 
+
 # SIDEBAR
 with st.sidebar:
 
     st.title("Angabe persönliche Informationen")
-
+    
     geschlecht = st.radio(
         "Was ist dein Geschlecht?",
         ("Männlich", "Weiblich"))
@@ -111,28 +113,34 @@ with st.sidebar:
             gesamtbedarf = grundbedarf + frauen[ziel]["Kalorien"]
             #st.write(gesamtbedarf)
 
+
 # TÄGLICHER BEDARF
 with st.container():
 
     st.title("Dein Täglichger Bedarf")
 
+    gesamtbedarf_kalo   = round(gesamtbedarf)
+    gesamtbedarf_eiw    = round(gewicht* gender_same[ziel]["Eiweiß"])
+    gesamtbedarf_kohl   = round(gesamtbedarf * gender_same[ziel]["Kohlenhydrate"])
+    gesamtbedarf_fett   = round(gesamtbedarf * gender_same[ziel]["Fett"])
+
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
         st.subheader("Kalorien")
-        st.subheader(round(gesamtbedarf))
+        st.subheader(gesamtbedarf_kalo)
 
     with col2:
         st.subheader("Eiweiß")
-        st.subheader(round(gewicht* gender_same[ziel]["Eiweiß"]))
+        st.subheader(gesamtbedarf_eiw)
 
     with col3:
         st.subheader("Kohlenhydrate", help = "Der Anteil von Kohlenhydraten an deinen täglichen Kalorien sollte 45-65% betragen")
-        st.subheader(round(gesamtbedarf * gender_same[ziel]["Kohlenhydrate"]))
+        st.subheader(gesamtbedarf_kohl)
 
     with col4:
         st.subheader("Fett", help = "Der Anteil gesunder Fette an deinen täglichen Kalorien sollte 20-35% betragen")
-        st.subheader(round(gesamtbedarf * gender_same[ziel]["Fett"]))
+        st.subheader(gesamtbedarf_fett)
 
 # AKTUELLER TAGESSTAND
 with st.container():
@@ -171,60 +179,60 @@ with st.container():
         st.data_editor(data_kalo,column_config={
                 "Kalorien": st.column_config.ProgressColumn(
                     "Kalorien",format="%d g", width= "medium",
-                    min_value=0,max_value=round(gesamtbedarf),),},hide_index=True,)
+                    min_value=0,max_value=gesamtbedarf_kalo,),},hide_index=True,)
         
-        if kalo[0] >= gesamtbedarf:
+        if kalo[0] >= gesamtbedarf_kalo:
             st.success("Tagesziel erreicht!")
         elif not kalo[0]:
             st.error("Bitte iss etwas!")
-        elif kalo[0] < gesamtbedarf and kalo[0] < (gesamtbedarf)*0.8:
+        elif kalo[0] < gesamtbedarf_kalo and kalo[0] < gesamtbedarf_kalo*0.8:
             st.warning("Work in progress!")
-        elif kalo[0] >= (gesamtbedarf)*0.8:
+        elif kalo[0] >= gesamtbedarf_kalo*0.8:
             st.info("Fast geschafft!")
      
     with col2:
         st.data_editor(data_eiw,column_config={
                 "Eiweiß": st.column_config.ProgressColumn(
                     "Eiweiß",format="%d g", width= "medium",
-                    min_value=0,max_value=round(gewicht* gender_same[ziel]["Eiweiß"]),),},hide_index=True,)
+                    min_value=0,max_value=gesamtbedarf_eiw,),},hide_index=True,)
         
-        if eiw[0] >= gewicht* gender_same[ziel]["Eiweiß"]:
+        if eiw[0] >= gesamtbedarf_eiw:
             st.success("Tagesziel erreicht!")
         elif not kalo[0]:
             st.error("Bitte iss etwas!")
-        elif eiw[0] < gewicht* gender_same[ziel]["Eiweiß"] and eiw[0] < (gewicht* gender_same[ziel]["Eiweiß"])*0.8:
+        elif eiw[0] < gesamtbedarf_eiw and eiw[0] < gesamtbedarf_eiw*0.8:
             st.warning("Work in progress!")
-        elif eiw[0] >= (gewicht* gender_same[ziel]["Eiweiß"])*0.8:
+        elif eiw[0] >= gesamtbedarf_eiw*0.8:
             st.info("Fast geschafft!")
         
     with col3:
         st.data_editor(data_kohl,column_config={
                 "Kohlenhydrate": st.column_config.ProgressColumn(
                     "Kohlenhydrate",format="%d g",width= "medium",
-                    min_value=0,max_value=round(gesamtbedarf * gender_same[ziel]["Kohlenhydrate"]),),},hide_index=True,)
+                    min_value=0,max_value=gesamtbedarf_kohl,),},hide_index=True,)
         
-        if kohl[0] >= gesamtbedarf * gender_same[ziel]["Kohlenhydrate"]:
+        if kohl[0] >= gesamtbedarf_kohl:
             st.success("Tagesziel erreicht!")
         elif not kohl[0]:
             st.error("Bitte iss etwas!")
-        elif kohl[0] < gesamtbedarf * gender_same[ziel]["Kohlenhydrate"] and kohl[0] < (gesamtbedarf * gender_same[ziel]["Kohlenhydrate"])*0.8:
+        elif kohl[0] < gesamtbedarf_kohl and kohl[0] < gesamtbedarf_kohl*0.8:
             st.warning("Work in progress!")
-        elif kohl[0] >= (gesamtbedarf * gender_same[ziel]["Kohlenhydrate"])*0.8:
+        elif kohl[0] >= gesamtbedarf_kohl*0.8:
             st.info("Fast geschafft!")
         
     with col4:
         st.data_editor(data_fett,column_config={
                 "Fett": st.column_config.ProgressColumn(
                     "Fett",format="%d g",width= "medium",
-                    min_value=0,max_value=round(gesamtbedarf * gender_same[ziel]["Fett"]),),},hide_index=True,)
+                    min_value=0,max_value=gesamtbedarf_fett,),},hide_index=True,)
         
-        if fett[0] >= gesamtbedarf * gender_same[ziel]["Fett"]:
+        if fett[0] >= gesamtbedarf_fett:
             st.success("Tagesziel erreicht!")
         elif not fett[0]:
             st.error("Bitte iss etwas!")
-        elif fett[0] < gesamtbedarf * gender_same[ziel]["Fett"] and fett[0] < (gesamtbedarf * gender_same[ziel]["Fett"])*0.8:
+        elif fett[0] < gesamtbedarf_fett and fett[0] < gesamtbedarf_fett*0.8:
             st.warning("Work in progress!")
-        elif fett[0] >= (gesamtbedarf * gender_same[ziel]["Fett"])*0.8:
+        elif fett[0] >= gesamtbedarf_fett*0.8:
             st.info("Fast geschafft!")
 
 
@@ -256,7 +264,7 @@ with st.container():
         index = df[(df['Name'] == name) & (df['Marke'] == marke)].index[0]
 
         with col3:
-            if (df.loc[index, "Einheit (g / Stück)"]) == "100.0":
+            if (df.loc[index, "Einheit (g / Stück)"]) == "100.0" or (df.loc[index, "Einheit (g / Stück)"]) == "100":
                 menge = st.number_input("Wie viel hast du gegessen (g/ml) " , min_value = 0, help = "Dieses Produkt ist in der Datenbank mit der Einheit g/ml geführt. Schreibe in dieses Feld die Menge (in g oder ml), die du von diesem Produkt gegessen hast.")
 
             elif (df.loc[index, "Einheit (g / Stück)"]) != "100.0":
@@ -265,7 +273,7 @@ with st.container():
         with col1:
             button = st.button("Eingabe Bestätigen")
             if button:
-                if (df.loc[index, "Einheit (g / Stück)"]) == "100.0":
+                if (df.loc[index, "Einheit (g / Stück)"]) == "100.0" or (df.loc[index, "Einheit (g / Stück)"]) == "100":
                     
                     data.append(datetime.now().date())
                     data.append(name)
@@ -406,7 +414,7 @@ with st.container():
                 for i in produkt_liste:
                     df.loc[len(df)] = i
 
-                df.to_csv("dataframe_5000.csv", index=False)
+                df.to_csv("dataframe_bereinigt.csv", index=False)
 
             if check == "Gastronomie":
                 produkt.append(name_manuell)
@@ -429,66 +437,83 @@ with st.container():
 # DataFrame VERLAUF           
 with st.container():
 
-    col1, col2 = st.columns([1.6,1])
-
-    with col1:
-        st.subheader("Gesamtverlauf")
-        st.dataframe(data = pd.read_csv("dataframe_track.csv"))
-
-    with col2:
-        st.subheader("Tagesverglauf")
-        
-        df_track = pd.DataFrame()
-        df_track["Kalorien"] = df_gegessen.groupby('Datum')['Kalorien'].sum()
-        df_track["Fett"] = df_gegessen.groupby('Datum')['Fett'].sum()
-        df_track["Kohlenhydrate"] = df_gegessen.groupby('Datum')['Kohlenhydrate'].sum()
-        df_track["Eiweiß"] = df_gegessen.groupby('Datum')['Eiweiß'].sum()
-
-        st.dataframe(df_track)
-
-        df_track.to_csv("diagramme.csv")
-
-
-
-    df_diagramm = pd.read_csv("diagramme.csv")
-
-    with st.expander("Weitere Informationen"):     
-        
-        col1, col2 = st.columns(2)
+    with st.expander("Für detaillierte Informationen und Verlauf hier aufklappen"):  
+        col1, col2 = st.columns([2.075,1], gap = "large")
 
         with col1:
-            feld = st.selectbox("Deinen Verlauf welches Nährstoffes möchtest du dir anzeigen lassen?", ("Kalorien", "Eiweiß", "Fett", "Kohlenhydrate"))
-            
-            # Liniendiagramm
-            plt.figure(figsize=(8, 6))
-            sns.lineplot(x='Datum', y=feld, data=df_diagramm, label=feld, linewidth=2.5)
-            
-            if feld == "Kalorien":
-                y = [gesamtbedarf, gesamtbedarf]
-            elif feld == "Eiweiß":
-                y = [gewicht* gender_same[ziel]["Eiweiß"], gewicht* gender_same[ziel]["Eiweiß"]]
-            elif feld == "Fett":
-                y = [gesamtbedarf * gender_same[ziel]["Kohlenhydrate"], gesamtbedarf * gender_same[ziel]["Kohlenhydrate"]]
-            elif feld == "Kohlenhydrate":
-                y = [gesamtbedarf * gender_same[ziel]["Fett"], gesamtbedarf * gender_same[ziel]["Fett"]]
-
-            plt.plot([df_diagramm["Datum"][0], df_diagramm["Datum"][len(df_diagramm)-1]], y, color='red', linestyle='--', label='Täglicher Bedarf')
-
-            plt.xlabel('Datum')
-            plt.ylabel("Menge in Gramm")
-            plt.title(f"Verlauf: {feld}")
-            plt.legend()
-    
-            st.pyplot(plt)
-
+            st.subheader("Gesamtverlauf")
+            df_gesamtverlauf = pd.read_csv("dataframe_track.csv")
+            st.dataframe(df_gesamtverlauf, hide_index = True)
+        
         with col2:
+            st.subheader("Tagesverglauf")
             
-            pass
+            df_track = pd.DataFrame()
+            
+            df_track["Kalorien"] = df_gegessen.groupby('Datum')['Kalorien'].sum()
+            df_track["Fett"] = df_gegessen.groupby('Datum')['Fett'].sum()
+            df_track["Kohlenhydrate"] = df_gegessen.groupby('Datum')['Kohlenhydrate'].sum()
+            df_track["Eiweiß"] = df_gegessen.groupby('Datum')['Eiweiß'].sum()
+
+
+            st.dataframe(df_track)
+
+
+            df_track.to_csv("diagramme.csv")
+
+            df_diagramm = pd.read_csv("diagramme.csv")
+
+        col1, col2 = st.columns(2)
+
+        if len(df_gesamtverlauf) >0:
+            with col1:
+                feld = st.selectbox("Deinen Verlauf welches Nährstoffes möchtest du dir anzeigen lassen?", ("Kalorien", "Eiweiß", "Fett", "Kohlenhydrate"))
+                
+                # Liniendiagramm
+                plt.figure(figsize=(8, 6))
+                sns.lineplot(x='Datum', y=feld, data=df_diagramm, label=feld, linewidth=2.5)
+                
+                if feld == "Kalorien":
+                    y = [gesamtbedarf_kalo, gesamtbedarf_kalo]
+                elif feld == "Eiweiß":
+                    y = [gesamtbedarf_eiw, gesamtbedarf_eiw]
+                elif feld == "Kohlenhydrate":
+                    y = [gesamtbedarf_kohl, gesamtbedarf_kohl]
+                elif feld == "Fett":
+                    y = [gesamtbedarf_fett, gesamtbedarf_fett]
+
+                plt.plot([df_diagramm["Datum"][0], df_diagramm["Datum"][len(df_diagramm)-1]], y, color='red', linestyle='--', label='Täglicher Bedarf')
+
+                plt.xlabel('Datum')
+                plt.ylabel("Menge in Gramm")
+                plt.title(f"Verlauf: {feld}")
+                plt.legend()
+        
+                st.pyplot(plt)
+
+            with col2:
+                
+                date = st.date_input("Für welchen Tag möchtest du dir deinen Verlauf anzeigen?",  min_value= datetime(2024, 1, 1), format = "YYYY-MM-DD")
+                str_date = str(date)
+
+                plt.figure(figsize=(8, 5.782))
+                
+                filtered_df = df_diagramm[df_diagramm['Datum'] == str_date]
+                filtered_df.loc[len(df)] = {"Kalorien": gesamtbedarf_kalo, "Eiweiß": gesamtbedarf_eiw, "Fett": gesamtbedarf_fett, "Kohlenhydrate": gesamtbedarf_kohl}
+                filtered_df["Kategorie"] = ["Ist", "Soll"]
+                filtered_df = filtered_df.drop("Datum", axis =1)
+
+                melted_df = filtered_df.melt(id_vars='Kategorie', var_name='Variable', value_name='Wert')
+
+                sns.barplot(x='Variable', y='Wert', hue='Kategorie', data=melted_df)
+                plt.xlabel('Nährstoffe')
+                plt.ylabel('Menge in Gramm')
+                plt.title(f"Soll / Ist Vergleich der Nährstoffaufnahme am {date}")
+                st.pyplot(plt)
 
 # TO DOS:
 # DATEN FÜR ABNEHMEN NOCHMAL ANSCHAUEN
 # Daten bereinigen
 # sidebar in cache speichern
-# Diagramme hinzufügen
 # visuell überarbeiten
         
