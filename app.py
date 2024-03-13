@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import csv
 from datetime import datetime, date
+import time
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set_theme(style="whitegrid", font_scale= 1.3)
@@ -157,7 +158,7 @@ with st.container():
     eiw = []
     eiw.append(round(df_gegessen[df_gegessen['Datum'] == str(datetime.today().date())]['Eiweiß'].sum()))
     if ziel == "Muskelaufbau":
-        if round(df_gegessen[df_gegessen['Datum'] == str(datetime.today().date())]['Eiweiß'].sum()) >= round(gewicht* gender_same[ziel]["Eiweiß"]):
+        if round(df_gegessen[df_gegessen['Datum'] == str(datetime.today().date())]['Eiweiß'].sum()) >= gesamtbedarf_eiw:
             st.balloons()
     
     data_kohl = pd.DataFrame({})
@@ -307,6 +308,8 @@ with st.container():
 
                     df_gegessen.to_csv("dataframe_track.csv", index=False)
                 
+                st.success("Eingabe erfolgreich!")
+                time.sleep(2)
                 st.experimental_rerun()
              
     with tab2:
@@ -369,6 +372,9 @@ with st.container():
                         df_gegessen.loc[len(df_gegessen)] = i
 
                     df_gegessen.to_csv("dataframe_track.csv", index=False)
+                
+                st.success("Eingabe erfolgreich!")
+                time.sleep(2)
                 st.experimental_rerun()
 
     with tab3:
@@ -431,6 +437,8 @@ with st.container():
 
                 df_restaurants.to_csv("dataframe_restaurants.csv", index=False)
 
+            st.success("Produkt erfolgreich hinzugefügt!")
+            time.sleep(2)
             st.experimental_rerun()
 
 
@@ -455,13 +463,11 @@ with st.container():
             df_track["Kohlenhydrate"] = df_gegessen.groupby('Datum')['Kohlenhydrate'].sum()
             df_track["Eiweiß"] = df_gegessen.groupby('Datum')['Eiweiß'].sum()
 
-
-            st.dataframe(df_track)
-
-
             df_track.to_csv("diagramme.csv")
 
             df_diagramm = pd.read_csv("diagramme.csv")
+
+            st.dataframe(df_diagramm, hide_index= True)
 
         col1, col2 = st.columns(2)
 
@@ -493,17 +499,23 @@ with st.container():
 
             with col2:
                 
-                date = st.date_input("Für welchen Tag möchtest du dir deinen Verlauf anzeigen?",  min_value= datetime(2024, 1, 1), format = "YYYY-MM-DD")
+                date = st.date_input("Für welchen Tag möchtest du dir deinen Verlauf anzeigen?",  min_value= datetime(2024, 1, 1), max_value = datetime.today().date())
                 str_date = str(date)
 
                 plt.figure(figsize=(8, 5.782))
                 
-                filtered_df = df_diagramm[df_diagramm['Datum'] == str_date]
-                filtered_df.loc[len(df)] = {"Kalorien": gesamtbedarf_kalo, "Eiweiß": gesamtbedarf_eiw, "Fett": gesamtbedarf_fett, "Kohlenhydrate": gesamtbedarf_kohl}
-                filtered_df["Kategorie"] = ["Ist", "Soll"]
-                filtered_df = filtered_df.drop("Datum", axis =1)
+                if str_date in df_diagramm['Datum'].values:
+                    filtered_df = df_diagramm[df_diagramm['Datum'] == str_date]
+                    filtered_df.loc[len(df)] = {"Kalorien": gesamtbedarf_kalo, "Eiweiß": gesamtbedarf_eiw, "Fett": gesamtbedarf_fett, "Kohlenhydrate": gesamtbedarf_kohl}
+                    filtered_df["Kategorie"] = ["Ist", "Soll"]                    
+                    filtered_df = filtered_df.drop("Datum", axis =1)
 
-                melted_df = filtered_df.melt(id_vars='Kategorie', var_name='Variable', value_name='Wert')
+                    melted_df = filtered_df.melt(id_vars='Kategorie', var_name='Variable', value_name='Wert')
+
+                else:
+                    filtered_df = pd.DataFrame({"Kalorien": [gesamtbedarf_kalo, 0], "Eiweiß": [gesamtbedarf_eiw, 0], "Fett": [gesamtbedarf_fett, 0], "Kohlenhydrate": [gesamtbedarf_kohl, 0], "Kategorie": "Soll"})
+
+                    melted_df = filtered_df.melt(id_vars='Kategorie', var_name='Variable', value_name='Wert')
 
                 sns.barplot(x='Variable', y='Wert', hue='Kategorie', data=melted_df)
                 plt.xlabel('Nährstoffe')
