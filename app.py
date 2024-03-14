@@ -12,7 +12,7 @@ st.set_page_config(layout="wide")
 # DATEN
 
 # DataFrames
-df = pd.read_csv("dataframe_bereinigt.csv")
+df = pd.read_csv("dataframe_5000.csv")
 df_restaurants = pd.read_csv("dataframe_restaurants.csv")
 df_gegessen = pd.read_csv("dataframe_track.csv")
 
@@ -34,7 +34,6 @@ gender_same = {"Muskelaufbau":{"Eiweiß": 1.6, "Kohlenhydrate": 0.55, "Fett": 0.
                "Gewicht halten": {"Eiweiß": 1.6, "Kohlenhydrate": 0.55, "Fett": 0.275}} # hier nochmal checken
 
 aktivitätsfaktor = {"sehr gering": 1.2, "gering": 1.375, "moderat": 1.55, "hoch": 1.725, "sehr hoch": 1.9} # 'sehr hoch' hier vernachlässigt
-
 
 # SIDEBAR
 with st.sidebar:
@@ -146,6 +145,7 @@ with st.container():
 # AKTUELLER TAGESSTAND
 with st.container():
     
+    st.subheader("", divider = "grey")
     st.subheader("Aktueller Stand Heute")
 
     col1, col2, col3, col4 = st.columns(4)
@@ -374,7 +374,7 @@ with st.container():
                     df_gegessen.to_csv("dataframe_track.csv", index=False)
                 
                 st.success("Eingabe erfolgreich!")
-                time.sleep(2)
+                time.sleep(0.1)
                 st.experimental_rerun()
 
     with tab3:
@@ -420,7 +420,7 @@ with st.container():
                 for i in produkt_liste:
                     df.loc[len(df)] = i
 
-                df.to_csv("dataframe_bereinigt.csv", index=False)
+                df.to_csv("dataframe_5000.csv", index=False)
 
             if check == "Gastronomie":
                 produkt.append(name_manuell)
@@ -438,7 +438,7 @@ with st.container():
                 df_restaurants.to_csv("dataframe_restaurants.csv", index=False)
 
             st.success("Produkt erfolgreich hinzugefügt!")
-            time.sleep(2)
+            time.sleep(0.1)
             st.experimental_rerun()
 
 
