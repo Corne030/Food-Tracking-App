@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set_theme(style="whitegrid", font_scale= 1.3)
 
-st.set_page_config(layout="wide")
+st.set_page_config(layout="wide", page_title= "Food Tracking App")
 
 # DATEN
 
