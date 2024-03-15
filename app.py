@@ -12,7 +12,7 @@ st.set_page_config(layout="wide", page_title= "Food Tracking App")
 # DATEN
 
 # DataFrames
-df = pd.read_csv("dataframe_5000.csv")
+df = pd.read_csv("dataframe_bereinigt.csv")
 df_restaurants = pd.read_csv("dataframe_restaurants.csv")
 df_gegessen = pd.read_csv("dataframe_track.csv")
 
@@ -420,7 +420,7 @@ with st.container():
                 for i in produkt_liste:
                     df.loc[len(df)] = i
 
-                df.to_csv("dataframe_5000.csv", index=False)
+                df.to_csv("dataframe_bereinigt.csv", index=False)
 
             if check == "Gastronomie":
                 produkt.append(name_manuell)
@@ -470,6 +470,8 @@ with st.container():
             st.dataframe(df_diagramm, hide_index= True)
 
         col1, col2 = st.columns(2)
+
+        # Diagramme
 
         if len(df_gesamtverlauf) >0:
             with col1:
@@ -525,7 +527,6 @@ with st.container():
 
 # TO DOS:
 # DATEN FÜR ABNEHMEN NOCHMAL ANSCHAUEN
-# Daten bereinigen
-# sidebar in cache speichern
-# visuell überarbeiten
+# Einheiten tägl. Bedarf berichtigen
+# csv mit Datenbanken austauschen
         
