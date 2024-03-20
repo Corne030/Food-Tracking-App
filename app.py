@@ -121,26 +121,26 @@ with st.container():
 
     gesamtbedarf_kalo   = round(gesamtbedarf)
     gesamtbedarf_eiw    = round(gewicht* gender_same[ziel]["Eiweiß"])
-    gesamtbedarf_kohl   = round(gesamtbedarf * gender_same[ziel]["Kohlenhydrate"])
-    gesamtbedarf_fett   = round(gesamtbedarf * gender_same[ziel]["Fett"])
+    gesamtbedarf_kohl   = round(gesamtbedarf * gender_same[ziel]["Kohlenhydrate"]/4.1)  # Faktoren zur Umrechnung von kcal in g
+    gesamtbedarf_fett   = round(gesamtbedarf * gender_same[ziel]["Fett"]/9.3)
 
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
         st.subheader("Kalorien")
-        st.subheader(gesamtbedarf_kalo)
+        st.subheader(f"{gesamtbedarf_kalo} kcal")
 
     with col2:
         st.subheader("Eiweiß")
-        st.subheader(gesamtbedarf_eiw)
+        st.subheader(f"{(gesamtbedarf_eiw)} g") 
 
     with col3:
         st.subheader("Kohlenhydrate", help = "Der Anteil von Kohlenhydraten an deinen täglichen Kalorien sollte 45-65% betragen")
-        st.subheader(gesamtbedarf_kohl)
+        st.subheader(f"{(gesamtbedarf_kohl)} g")
 
     with col4:
         st.subheader("Fett", help = "Der Anteil gesunder Fette an deinen täglichen Kalorien sollte 20-35% betragen")
-        st.subheader(gesamtbedarf_fett)
+        st.subheader(f"{(gesamtbedarf_fett)} g")
 
 # AKTUELLER TAGESSTAND
 with st.container():
